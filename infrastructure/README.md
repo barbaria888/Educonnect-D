@@ -1,145 +1,113 @@
-# EduConnect Infrastructure & Deployment
+---
 
-This directory contains infrastructure as code templates and deployment instructions for EduConnect.
+# EduConnect K3s Deployment
 
-## Contents
+This repository contains a **bash script** to deploy the **EduConnect application** on a local K3s Kubernetes cluster with **Ingress-NGINX**. It automates the setup of MongoDB, Backend, Frontend, and ingress routing for easy testing and development.
 
-- `cloudformation-template.yaml` - AWS CloudFormation template for S3 and IAM resources
-- `Dockerfile` (in backend/) - Container image for backend deployment
-- GitHub Actions workflows (in `.github/workflows/`)
+---
 
-## Prerequisites
+## 🚀 Features
 
-- AWS Account with appropriate permissions
-- AWS CLI configured
-- Docker (for containerized deployment)
-- MongoDB Atlas account or MongoDB instance
+* Automatic installation of **Ingress-NGINX** (if not already present)
+* Patching Ingress service to **NodePort** for external access
+* Deployments for:
+  * **MongoDB**
+  * **Backend API**
+  * **Frontend Application**
+* Automatic **Nginx-Ingress** setup
+* Waits for all deployments to be ready
+* Prints **access URLs** after deployment
+---
 
-## Deployment Options
+## 📋 Prerequisites
 
-### Option 1: Elastic Beanstalk (Recommended for simplicity)
+* **K3s or kubeadm** installed on your machine
+* **kubectl** configured and connected to the K3s cluster
+* Bash shell (`#!/bin/bash`)
+* YAML files present in the same directory:
 
-1. **Create S3 and IAM resources:**
-   ```bash
-   aws cloudformation create-stack \
-     --stack-name educonnect-infrastructure \
-     --template-body file://cloudformation-template.yaml \
-     --parameters ParameterKey=Environment,ParameterValue=production \
-                  ParameterKey=S3BucketName,ParameterValue=educonnect-uploads
-   ```
+  * `mongodb.yaml`
+  * `backend.yaml`
+  * `frontend.yaml`
+  * `ingress.yaml`
 
-2. **Create Elastic Beanstalk Application:**
-   ```bash
-   # Install EB CLI
-   pip install awsebcli
+---
 
-   # Initialize EB (in backend directory)
-   cd backend
-   eb init -p docker educonnect-backend --region us-east-1
+## ⚡ Quick Deployment
 
-   # Create environment
-   eb create educonnect-prod \
-     --envvars MONGO_URI=your-mongo-uri,JWT_SECRET=your-secret,...
-   ```
+1. Clone the repository:
 
-3. **Deploy:**
-   ```bash
-   eb deploy
-   ```
+```bash
+git clone --branch=production https://github.com/Dhruvsahu1/Educonnect-D.git
+cd Educonnect/infrastructure
+```
 
-### Option 2: ECS Fargate
+2. Make the script executable:
 
-1. **Build and push Docker image:**
-   ```bash
-   # Build image
-   docker build -t educonnect-backend:latest ./backend
+```bash
+chmod +x deploy.sh
+```
 
-   # Tag for ECR
-   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
-   docker tag educonnect-backend:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/educonnect-backend:latest
-   docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/educonnect-backend:latest
-   ```
+3. Run the deployment:
 
-2. **Create ECS cluster and service** (use AWS Console or Terraform)
+```bash
+./deploy.sh
+```
 
-### Frontend Deployment (S3 + CloudFront)
+---
 
-1. **Build frontend:**
-   ```bash
-   cd frontend
-   npm run build
-   ```
+## 🛠 How It Works
 
-2. **Create S3 bucket for frontend:**
-   ```bash
-   aws s3 mb s3://educonnect-frontend
-   aws s3 website s3://educonnect-frontend --index-document index.html
-   ```
+1. **Check kubectl connectivity** to ensure cluster access.
+2. **Install ingress-nginx** if the namespace doesn’t exist.
+3. **Patch ingress-nginx service** to NodePort to expose HTTP and HTTPS externally.
+4. **Deploy MongoDB, Backend, and Frontend** via their respective YAML files.
+5. **Deploy Ingress** for routing frontend and backend traffic.
+6. **Wait for all deployments** to be ready.
+7. **Display pod, service, and ingress status**.
+8. **Print URLs** to access the application and API.
 
-3. **Upload build:**
-   ```bash
-   aws s3 sync dist/ s3://educonnect-frontend --delete
-   ```
+---
 
-4. **Create CloudFront distribution:**
-   - Use AWS Console or CloudFormation
-   - Origin: S3 bucket
-   - Default root object: index.html
-   - Error pages: 404 -> /index.html (for React Router)
+## 🌐 Accessing EduConnect
 
-5. **Invalidate cache after deployment:**
-   ```bash
-   aws cloudfront create-invalidation \
-     --distribution-id <distribution-id> \
-     --paths "/*"
-   ```
+After deployment, access the application via your machine’s IP:
 
-## Environment Variables
+```text
+Frontend (HTTP): http://<NODE_IP>:<NODEPORT_HTTP>/
+Backend API: http://<NODE_IP>:<NODEPORT_HTTP>/api
+Health Check: http://<NODE_IP>:<NODEPORT_HTTP>/health
+```
 
-Set these in your deployment platform:
+* Replace `<NODE_IP>` with the IP printed by the script
+* `<NODEPORT_HTTP>` is automatically assigned by Kubernetes
 
-### Backend
-- `PORT` - Server port (default: 5000)
-- `MONGO_URI` - MongoDB connection string
-- `JWT_SECRET` - Secret for access tokens
-- `JWT_REFRESH_SECRET` - Secret for refresh tokens
-- `AWS_ACCESS_KEY_ID` - AWS access key
-- `AWS_SECRET_ACCESS_KEY` - AWS secret key
-- `AWS_REGION` - AWS region (e.g., us-east-1)
-- `S3_BUCKET_NAME` - S3 bucket name from CloudFormation
-- `FRONTEND_URL` - Frontend URL for CORS
-- `COOKIE_SECURE` - true for production
-- `COOKIE_SAME_SITE` - none for cross-origin
+---
 
-### Frontend
-- `VITE_API_URL` - Backend API URL
+## ⚠️ Notes
 
-## Security Checklist
+* **LoadBalancer services do not work** on local K3s clusters. NodePort is required for external access.
+* Ensure all YAML files are correctly configured with container images and ports.
+* Ingress routing will only work if NodePort is properly patched.
 
-- [ ] Use AWS Secrets Manager for sensitive values
-- [ ] Enable HTTPS (CloudFront/ALB)
-- [ ] Set CORS whitelist to production domain
-- [ ] Use secure cookies in production
-- [ ] Rotate JWT secrets regularly
-- [ ] Enable S3 bucket versioning
-- [ ] Set S3 bucket policies (least privilege)
-- [ ] Enable CloudFront WAF rules
-- [ ] Set up CloudWatch alarms
-- [ ] Enable AWS GuardDuty
-- [ ] Regular security audits
+---
 
-## Monitoring
+## 📦 Files
 
-- CloudWatch Logs for application logs
-- CloudWatch Metrics for performance
-- AWS X-Ray for distributed tracing (optional)
-- S3 access logs
+| File            | Description                          |
+| --------------- | ------------------------------------ |
+| `deploy.sh`     | Main deployment script               |
+| `mongodb.yaml`  | MongoDB deployment/service manifest  |
+| `backend.yaml`  | Backend deployment/service manifest  |
+| `frontend.yaml` | Frontend deployment/service manifest |
+| `ingress.yaml`  | Ingress routing manifest             |
 
-## Cost Optimization
+---
 
-- Use S3 Intelligent-Tiering
-- Enable CloudFront compression
-- Set appropriate cache TTLs
-- Use ECS Fargate Spot for non-production
-- Monitor and optimize database queries
+## 🔧 Troubleshooting
 
+* **502 Bad Gateway** → Ensure NodePort is exposed and ingress controller pods are running.
+* **Pods stuck in Pending** → Check node resources and pod logs.
+* **Ingress unreachable** → Verify NodePort and that your firewall allows access.
+
+---
