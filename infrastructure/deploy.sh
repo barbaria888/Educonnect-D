@@ -7,7 +7,7 @@ set -e
 echo "=== EduConnect K3s Deployment ==="
 
 # Verify kubeconfig
-export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
 
 echo "1. Checking cluster connectivity..."
 kubectl get nodes
