@@ -13,7 +13,7 @@ kubectl get nodes
 # 1️⃣ Install ingress-nginx if not present
 if ! kubectl get ns ingress-nginx &> /dev/null; then
   echo "1. Installing ingress-nginx..."
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.14.0/deploy/static/provider/k3s/deploy.yaml 
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/cloud/deploy.yaml
   echo "Waiting 30s for ingress pods to start..."
   sleep 30
 else
