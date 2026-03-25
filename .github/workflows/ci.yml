@@ -123,11 +123,20 @@ jobs:
       # Trivy vulnerability scan
       # -------------------------------
       - name: Trivy Image Scan
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0
         env:
           TRIVY_CACHE_DIR: ~/.cache/trivy
         with:
           image-ref: docker.io/hardik0811/educonnect-backend:latest
+          format: table
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          hide-progress: true
+          exit-code: 0
+      - name: Trivy Frontend Scan
+        uses: aquasecurity/trivy-action@v0.20.0
+        with:
+          image-ref: docker.io/hardik0811/educonnect-frontend:latest
           format: table
           severity: CRITICAL,HIGH
           ignore-unfixed: true
