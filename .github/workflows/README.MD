@@ -126,12 +126,12 @@ This reflects **real DevSecOps practices**:
 
 ## 🔮 Future Enhancements
 
-- ❌ Fail builds on critical vulnerabilities
+- ☁️ Kubernetes auto-deployment (GKE / EKS / K3S ) using ArgoCD
+- 🏷️ Image Versioning with Git SHA
 - 🏷️ Versioned Docker tagging (replace `latest`)
-- ☁️ Kubernetes auto-deployment (GKE / EKS)
+- ❌ Fail builds on critical vulnerabilities
 - 🔍 Secrets scanning (GitLeaks)
-- 📊 DAST testing
-- 🔐 Image signing (Cosign)
+
 
 ---
 
@@ -145,6 +145,7 @@ This pipeline ensures:
 ✔ Safe container images  
 ✔ Transparent dependencies  
 
----
 
+
+---
 **CI is not just automation — it’s trust, enforced at every commit.**
