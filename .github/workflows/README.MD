@@ -4,129 +4,147 @@
 ![CI](https://img.shields.io/github/actions/workflow/status/Dhruvsahu1/Educonnect-D/ci.yml?label=CI%20Pipeline)
 ![CodeQL](https://img.shields.io/badge/Security-CodeQL-blueviolet?logo=github)
 ![Trivy Scan](https://img.shields.io/badge/Trivy-Image%20Scan-blue?logo=aquasecurity)
+![SBOM](https://img.shields.io/badge/SBOM-CycloneDX-informational)
 ![Docker](https://img.shields.io/badge/Docker-Build%20%26%20Push-2496ED?logo=docker)
 ![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?logo=node.js)
-![Security](https://img.shields.io/badge/DevSecOps-Enabled-critical)
+![DevSecOps](https://img.shields.io/badge/DevSecOps-Enabled-critical)
 ![Container Security](https://img.shields.io/badge/Container%20Security-Trivy-informational)
 ![Cloud Native](https://img.shields.io/badge/Cloud--Native-Kubernetes-326CE5?logo=kubernetes)
 
 ---
 
-Each stage in this pipeline is deliberately ordered.
+## ⚙️ CI/CD Pipeline Overview
+
+Each stage in this pipeline is deliberately ordered.  
 **Nothing moves forward unless it earns the right to.**
-Every step protects the next one from receiving unsafe, low-quality, or unverified artifacts.
+
+Every step acts as a gate — protecting downstream stages from insecure, low-quality, or unverified code.
 
 ---
 
-## 🔐 Code Security — CodeQL (Shift-Left Security)
+## 🔐 Code Security — CodeQL (Shift-Left)
 
-The pipeline begins with **static application security testing (SAST)** using GitHub CodeQL.
-This is a *shift-left* control — security happens **before** building, testing, or shipping anything.
+The pipeline starts with **SAST using CodeQL**.
 
-At this stage:
+### What happens:
+- Static analysis (no execution required)
+- Backend and frontend scanned independently
+- Results published in GitHub Security tab
 
-* The source code is analyzed directly, not executed
-* Both backend and frontend code paths are inspected
-* Findings are published to GitHub’s **Security tab** for visibility and traceability
+### Detects:
+- SQL Injection
+- XSS
+- Command Injection
+- Hardcoded secrets
+- Unsafe deserialization
+- Weak cryptography
+- Path traversal
 
-CodeQL looks for real-world vulnerabilities such as injection flaws, insecure authentication logic, hardcoded secrets, unsafe deserialization, weak cryptography, and path traversal issues.
-
-The philosophy here is simple:
-**security defects are cheapest to fix when caught early.**
-
----
-
-## 🧹 Linting — Code Quality & Consistency
-
-Once the code is deemed *safe*, the pipeline enforces **code quality standards**.
-
-Linting focuses on:
-
-* Readability
-* Consistency
-* Prevention of subtle logic errors
-* Long-term maintainability
-
-The backend and frontend are checked independently, respecting the fact that each layer evolves at a different pace.
-If linting rules are not yet defined in some areas, the pipeline fails gracefully — encouraging improvement without blocking progress.
-
-This stage protects teams from technical debt silently accumulating over time.
+👉 **Goal:** Catch vulnerabilities early.
 
 ---
 
-## 🧪 Tests — Functional Confidence
+## 🧹 Linting — Code Quality Gate
 
-With clean and secure code in place, the pipeline validates **behavior**.
+After security validation:
 
-Automated tests ensure:
+- Backend and frontend linted separately
+- Ensures readability and consistency
+- Prevents bad coding practices
+- Gracefully skips if lint rules not defined
 
-* Existing functionality still works
-* New changes don’t break assumptions
-* The system behaves as expected across backend and frontend layers
-
-If tests are missing, the pipeline does not hard-fail — allowing **incremental adoption of testing** while still preserving delivery momentum.
-
-Confidence here is not theoretical.
-It’s executable.
+👉 Prevents long-term technical debt.
 
 ---
 
-## 🐳 Docker Build — Immutable Packaging
+## 🧪 Testing — Functional Validation
 
-Only after passing security checks, linting, and tests does the pipeline package the application.
+Basic validation stage:
 
-At this stage:
+- Backend & frontend test hooks present
+- Supports gradual adoption of testing
 
-* The backend is containerized
-* The build happens in a clean, reproducible environment
-* Credentials are handled securely via GitHub Secrets
-
-The result is an **immutable Docker image** — a predictable artifact that behaves the same everywhere.
-
-No shortcuts. No “works on my machine.”
+👉 Ensures system stability.
 
 ---
 
-## 🛡️ Trivy Image Scan — Runtime Security
+## 🐳 Docker Build — Immutable Artifacts
 
-Before the image is shared, it is scanned using **Trivy**.
+Only validated code is packaged:
 
-This scan inspects:
+- Backend & frontend images built
+- Clean, reproducible environments
+- Secure DockerHub authentication
 
-* OS-level packages
-* Application dependencies
-* Known CVEs with high and critical severity
-
-The goal is visibility and accountability.
-Nothing is pushed blindly.
-
-Once scanned, the image is published to Docker Hub, ready for deployment or further promotion.
+👉 Produces consistent deployable artifacts.
 
 ---
 
-## 🚀 Why This Pipeline Matters
+## 🛡️ Container Security — Trivy Scan
 
-This pipeline reflects **real-world DevSecOps thinking**, not tutorial automation:
+Before pushing images:
 
-* Security is embedded, not bolted on
-* Quality gates exist before packaging
-* Containers are scanned before distribution
-* Automation builds trust at every commit
+- Backend and frontend images scanned
+- Detects HIGH & CRITICAL vulnerabilities
+- Uses cached DB for faster scans
 
-
-CI helps ensure **secure software supply chain**.
+👉 No insecure image gets pushed.
 
 ---
 
-## 📌 Future Enhancements
+## 📦 SBOM Generation — Supply Chain Transparency
 
-The pipeline is intentionally extensible. Planned improvements include:
+Generates a **CycloneDX SBOM** using Trivy.
 
-* SBOM generation for supply-chain transparency
-* Enforced build failures on critical vulnerabilities
-* Versioned Docker image tagging
-* Deployment stages using Kubernetes or Cloud Run
-* Dependency monitoring with Dependabot and policy-as-code
+### Benefits:
+- Full dependency visibility
+- Transparency in software supply chain
+- Useful for audits & compliance
 
 ---
 
+## 🚀 Image Distribution
+
+After passing all checks:
+
+- Images pushed to Docker Hub
+- Ready for deployment
+
+---
+
+## 🧠 Why This Pipeline Matters
+
+This reflects **real DevSecOps practices**:
+
+- Security-first (Shift Left)
+- Quality gates enforced
+- Container vulnerability scanning
+- SBOM generation
+- Modular, production-style pipeline
+
+---
+
+## 🔮 Future Enhancements
+
+- ❌ Fail builds on critical vulnerabilities
+- 🏷️ Versioned Docker tagging (replace `latest`)
+- ☁️ Kubernetes auto-deployment (GKE / EKS)
+- 🔍 Secrets scanning (GitLeaks)
+- 📊 DAST testing
+- 🔐 Image signing (Cosign)
+
+---
+
+## ⚡ Summary
+
+This pipeline ensures:
+
+✔ Secure code  
+✔ Clean code  
+✔ Tested code  
+✔ Safe container images  
+✔ Transparent dependencies  
+
+---
+
+**CI is not just automation — it’s trust, enforced at every commit.**
