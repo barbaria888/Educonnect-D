@@ -123,7 +123,7 @@ jobs:
       # Trivy vulnerability scan
       # -------------------------------
       - name: Trivy Image Scan
-        uses: aquasecurity/trivy-action@v0
+        uses: aquasecurity/trivy-action@v0.20.0
         env:
           TRIVY_CACHE_DIR: ~/.cache/trivy
         with:
@@ -147,7 +147,7 @@ jobs:
       # Generate SBOM (CycloneDX)
       # -------------------------------
       - name: Generate SBOM
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.20.0
         env:
           TRIVY_CACHE_DIR: ~/.cache/trivy
         with:
