@@ -13,7 +13,7 @@
 
 ---
 
-## ⚙️ CI/CD Pipeline Overview
+## 🦂 Devsecops Pipeline Overview
 
 Each stage in this pipeline is deliberately ordered.  
 **Nothing moves forward unless it earns the right to.**
