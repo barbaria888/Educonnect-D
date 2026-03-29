@@ -10,7 +10,7 @@ stringData:
   AWS_ACCESS_KEY_ID: ""
   AWS_SECRET_ACCESS_KEY: ""
   AWS_REGION: "us-east-2"
-  AWS_S3_BUCKET: ""
+  S3_BUCKET_NAME: ""
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -88,11 +88,11 @@ spec:
               name: backend-secrets
               key: AWS_REGION
 
-        - name: AWS_S3_BUCKET
+        - name: S3_BUCKET_NAME
           valueFrom:
             secretKeyRef:
               name: backend-secrets
-              key: AWS_S3_BUCKET
+              key: S3_BUCKET_NAME
 
         resources:
           requests:
