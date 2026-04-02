@@ -26,7 +26,7 @@ EduConnect is a full-stack web application that connects students and college ad
 <a href="https://hardik-arora.hashnode.dev/from-localhost-to-production-my-journey-debugging-mongodb-and-nodejs-on-k3s">
   <img src="https://cdn.hashnode.com/res/hashnode/image/upload/v1611902473383/CDyAuTy75.png" width="30" height="30" alt="Hashnode Article"/>
 From "Localhost" to Production: My Journey Debugging🛠️ MongoDB🛢️ and Node.js on k3s☸️</a>
-<br>
+---
 
 
 ## Project Structure
