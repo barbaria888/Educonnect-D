@@ -17,14 +17,16 @@
 # EduConnect - Social + Academic Web Application
 
 EduConnect is a full-stack web application that connects students and college administrators in a social and academic environment. Students can share posts, showcase certifications, interact through comments, and access study materials. Administrators can manage colleges, upload study materials, and moderate content.
-
+### Hashnode Articles:
+🛡️ EduConnect: A Deep Dive into Cloud-Native Security & K3s Orchestration
 <a href="https://hardik0811arora.hashnode.dev/educonnect-a-deep-dive-into-cloud-native-security-k3s-orchestration">
   <img src="https://cdn.hashnode.com/res/hashnode/image/upload/v1611902473383/CDyAuTy75.png" width="30" height="30" alt="Hashnode Article"/>
-</a>
+</a><br>
+From "Localhost" to Production: My Journey Debugging🛠️ MongoDB🛢️ and Node.js on k3s☸️
 <a href="https://hardik-arora.hashnode.dev/from-localhost-to-production-my-journey-debugging-mongodb-and-nodejs-on-k3s">
   <img src="https://cdn.hashnode.com/res/hashnode/image/upload/v1611902473383/CDyAuTy75.png" width="30" height="30" alt="Hashnode Article"/>
 </a>
-
+<br>
 ## Project Structure
 
 ```
