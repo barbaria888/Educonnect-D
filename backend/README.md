@@ -3,7 +3,6 @@
 RESTful API for EduConnect built with Node.js, Express, and MongoDB.
 
 ## Features
-
 - JWT authentication with refresh tokens
 - Role-based access control (Student/Admin)
 - File uploads to AWS S3
