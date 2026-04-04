@@ -16,15 +16,18 @@ const commentRoutes = require('./routes/commentRoutes');
 const materialRoutes = require('./routes/materialRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
-// Connect to database
+
 connectDB();
 
 const app = express();
 
-// Security middleware
+
 app.use(helmet());
 
-// CORS configuration
+// ✅ Trust proxy headers (needed behind ingress/load balancer)
+app.set('trust proxy', 1);
+
+
 const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true,
@@ -47,7 +50,7 @@ if (process.env.NODE_ENV === 'development') {
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // 100 requests per window
+  max: 100,
   message: 'Too many requests from this IP, please try again later.',
 });
 app.use('/api/', limiter);
@@ -57,7 +60,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// API routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/certifications', certificationRoutes);
@@ -70,12 +73,11 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Error handler (must be last)
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT,'0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });
-
